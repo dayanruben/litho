@@ -82,3 +82,8 @@ Please also read our [Coding Style](http://fblitho.com/docs/best-practices#codin
 ## License
 
 Litho is licensed under the [Apache 2.0 License](LICENSE).
+
+## Fork validation policy
+
+This fork is used for compatibility validation. Publication and deployment steps
+are guarded against running under `dayanruben`; build and test steps remain available.

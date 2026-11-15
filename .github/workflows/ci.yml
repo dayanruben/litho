@@ -57,6 +57,7 @@ jobs:
       - name: Update gradle.properties
         run: echo -e "signing.secretKeyRingFile=/tmp/secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}\nmavenCentralPassword=${{ secrets.SONATYPE_NEXUS_PASSWORD }}\nmavenCentralUsername=${{ secrets.SONATYPE_NEXUS_USERNAME }}" >> gradle.properties
       - name: Publish Snapshot
+        if: github.repository_owner != 'dayanruben'
         run: ./gradlew publishToMavenCentral --stacktrace
       - name: Clean secrets
         if: always()

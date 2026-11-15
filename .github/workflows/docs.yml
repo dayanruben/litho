@@ -28,6 +28,7 @@ jobs:
         working-directory: website/
 
       - name: Deploy
+        if: github.repository_owner != 'dayanruben'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
