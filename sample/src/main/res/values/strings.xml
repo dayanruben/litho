@@ -40,4 +40,106 @@
     <item quantity="one" description="Screen reader text for a badge counting one new item. %d is the count."><xliff:g id="count" example="1">%d</xliff:g> new item</item>
     <item quantity="other" description="Screen reader text for a badge counting two or more new items. %d is the count."><xliff:g id="count" example="3">%d</xliff:g> new items</item>
   </plurals>
+  <string name="litho_sample_animation_content_overview_label" description="Tab label for the overview page in the Litho AnimatedContent animation sample">Overview</string>
+  <string name="litho_sample_animation_content_pipeline_label" description="Tab label for the pipeline page in the Litho AnimatedContent animation sample">Pipeline</string>
+  <string name="litho_sample_animation_content_review_label" description="Tab label for the review page in the Litho AnimatedContent animation sample">Review</string>
+  <string name="litho_sample_animation_content_overview_title" description="Title for the overview page in the Litho AnimatedContent animation sample">Release health</string>
+  <string name="litho_sample_animation_content_pipeline_title" description="Title for the pipeline page in the Litho AnimatedContent animation sample">Build and verification</string>
+  <string name="litho_sample_animation_content_review_title" description="Title for the review page in the Litho AnimatedContent animation sample">Launch checklist</string>
+  <string name="litho_sample_animation_content_overview_summary" description="Summary text for the overview page in the Litho AnimatedContent animation sample">A live command center for the rollout, with queue pressure and owner status visible at a glance.</string>
+  <string name="litho_sample_animation_content_pipeline_summary" description="Summary text for the pipeline page in the Litho AnimatedContent animation sample">Capacity is tight, but high priority jobs are being promoted through the verification queue.</string>
+  <string name="litho_sample_animation_content_review_summary" description="Summary text for the review page in the Litho AnimatedContent animation sample">Owner sign-off is almost complete, with privacy and experiment review still open.</string>
+  <string name="litho_sample_animation_content_status_healthy" description="Status pill text indicating the release is healthy in the Litho AnimatedContent animation sample">Healthy</string>
+  <string name="litho_sample_animation_content_status_busy" description="Status pill text indicating the pipeline is busy in the Litho AnimatedContent animation sample">Busy</string>
+  <string name="litho_sample_animation_content_status_review" description="Status pill text indicating the launch is under review in the Litho AnimatedContent animation sample">Review</string>
+  <string name="litho_sample_animation_content_stat_success" description="Metric label for successful release checks in the Litho AnimatedContent animation sample">success</string>
+  <string name="litho_sample_animation_content_stat_alerts" description="Metric label for alert count in the Litho AnimatedContent animation sample">alerts</string>
+  <string name="litho_sample_animation_content_stat_latency" description="Metric label for latency in the Litho AnimatedContent animation sample">latency</string>
+  <string name="litho_sample_animation_content_stat_jobs" description="Metric label for build job count in the Litho AnimatedContent animation sample">jobs</string>
+  <string name="litho_sample_animation_content_stat_queued" description="Metric label for queued work in the Litho AnimatedContent animation sample">queued</string>
+  <string name="litho_sample_animation_content_stat_blocked" description="Metric label for blocked work in the Litho AnimatedContent animation sample">blocked</string>
+  <string name="litho_sample_animation_content_stat_owners" description="Metric label for launch owner count in the Litho AnimatedContent animation sample">owners</string>
+  <string name="litho_sample_animation_content_stat_signed" description="Metric label for signed-off launch owners in the Litho AnimatedContent animation sample">signed</string>
+  <string name="litho_sample_animation_content_stat_pending" description="Metric label for pending launch owners in the Litho AnimatedContent animation sample">pending</string>
+  <string name="litho_sample_animation_content_android_lane_title" description="Timeline row title for an Android verification lane in the Litho AnimatedContent animation sample">Android lane</string>
+  <string name="litho_sample_animation_content_android_lane_subtitle" description="Timeline row subtitle for completed Android smoke tests in the Litho AnimatedContent animation sample">Smoke tests completed</string>
+  <string name="litho_sample_animation_content_feed_ranking_title" description="Timeline row title for feed ranking in the Litho AnimatedContent animation sample">Feed ranking</string>
+  <string name="litho_sample_animation_content_feed_ranking_subtitle" description="Timeline row subtitle for a stable canary group in the Litho AnimatedContent animation sample">Canary group holding steady</string>
+  <string name="litho_sample_animation_content_emulator_pool_title" description="Timeline row title for emulator pool capacity in the Litho AnimatedContent animation sample">Emulator pool</string>
+  <string name="litho_sample_animation_content_emulator_pool_subtitle" description="Timeline row subtitle for waiting on large emulator images in the Litho AnimatedContent animation sample">Waiting on large device images</string>
+  <string name="litho_sample_animation_content_ios_lane_title" description="Timeline row title for an iOS verification lane in the Litho AnimatedContent animation sample">iOS lane</string>
+  <string name="litho_sample_animation_content_ios_lane_subtitle" description="Timeline row subtitle for retrying screenshot tests in the Litho AnimatedContent animation sample">Retrying flaky screenshot suite</string>
+  <string name="litho_sample_animation_content_server_lane_title" description="Timeline row title for a server verification lane in the Litho AnimatedContent animation sample">Server lane</string>
+  <string name="litho_sample_animation_content_server_lane_subtitle" description="Timeline row subtitle for green diff tests in the Litho AnimatedContent animation sample">Diff tests are green</string>
+  <string name="litho_sample_animation_content_privacy_review_title" description="Timeline row title for privacy review in the Litho AnimatedContent animation sample">Privacy review</string>
+  <string name="litho_sample_animation_content_privacy_review_subtitle" description="Timeline row subtitle for a requested privacy note in the Litho AnimatedContent animation sample">Final note requested</string>
+  <string name="litho_sample_animation_content_experiment_owner_title" description="Timeline row title for an experiment owner in the Litho AnimatedContent animation sample">Experiment owner</string>
+  <string name="litho_sample_animation_content_experiment_owner_subtitle" description="Timeline row subtitle for confirmed experiment holdout size in the Litho AnimatedContent animation sample">Holdout size confirmed</string>
+  <string name="litho_sample_infinite_showcase_title" description="Title for the product-style Litho infinite animation sample">LaunchFlow</string>
+  <string name="litho_sample_infinite_showcase_subtitle" description="Subtitle for the product-style Litho infinite animation sample">Live rollout command center</string>
+  <string name="litho_sample_infinite_showcase_pause" description="Button text to pause animations in the product-style Litho infinite animation sample">Pause</string>
+  <string name="litho_sample_infinite_showcase_resume" description="Button text to resume animations in the product-style Litho infinite animation sample">Resume</string>
+  <string name="litho_sample_infinite_showcase_stop" description="Button text to stop the telemetry loop and hold its current position in the Litho infinite animation sample">Stop</string>
+  <string name="litho_sample_infinite_showcase_restart" description="Button text to restart the stopped telemetry loop from the beginning in the Litho infinite animation sample">Restart</string>
+  <string name="litho_sample_infinite_showcase_hero_label" description="Small label above the hero title in the product-style Litho infinite animation sample">Release command</string>
+  <string name="litho_sample_infinite_showcase_hero_title" description="Hero title for the active rollout in the product-style Litho infinite animation sample">North America rollout</string>
+  <string name="litho_sample_infinite_showcase_hero_summary" description="Hero summary text for the product-style Litho infinite animation sample">Production traffic is shifting while health checks, owner updates, and forecast cards refresh in place.</string>
+  <string name="litho_sample_infinite_showcase_live_status" description="Status pill text indicating that the rollout is live in the product-style Litho infinite animation sample">Live</string>
+  <string name="litho_sample_infinite_showcase_metric_health_value" description="Health metric value in the product-style Litho infinite animation sample">99.98%</string>
+  <string name="litho_sample_infinite_showcase_metric_health" description="Health metric label in the product-style Litho infinite animation sample">health</string>
+  <string name="litho_sample_infinite_showcase_metric_checks_value" description="Checks metric value in the product-style Litho infinite animation sample">18</string>
+  <string name="litho_sample_infinite_showcase_metric_checks" description="Checks metric label in the product-style Litho infinite animation sample">checks</string>
+  <string name="litho_sample_infinite_showcase_metric_latency_value" description="Latency metric value in the product-style Litho infinite animation sample">4m</string>
+  <string name="litho_sample_infinite_showcase_metric_latency" description="Latency metric label in the product-style Litho infinite animation sample">latency</string>
+  <string name="litho_sample_infinite_showcase_telemetry_label" description="Panel label for telemetry refresh in the product-style Litho infinite animation sample">Telemetry</string>
+  <string name="litho_sample_infinite_showcase_telemetry_title" description="Panel title for telemetry refresh in the product-style Litho infinite animation sample">Syncing signals</string>
+  <string name="litho_sample_infinite_showcase_telemetry_subtitle" description="Panel subtitle for telemetry refresh in the product-style Litho infinite animation sample">Next refresh in 12s</string>
+  <string name="litho_sample_infinite_showcase_telemetry_stopped_title" description="Telemetry panel title when its loop is stopped in the Litho infinite animation sample">Sync stopped</string>
+  <string name="litho_sample_infinite_showcase_telemetry_stopped_subtitle" description="Explains that restarting a stopped telemetry loop begins a new cycle in the Litho infinite animation sample">Restart starts fresh</string>
+  <string name="litho_sample_infinite_showcase_assistant_label" description="Panel label for launch assistant in the product-style Litho infinite animation sample">Assistant</string>
+  <string name="litho_sample_infinite_showcase_assistant_title" description="Panel title for launch assistant in the product-style Litho infinite animation sample">Drafting owner summary</string>
+  <string name="litho_sample_infinite_showcase_assistant_subtitle" description="Panel subtitle for launch assistant in the product-style Litho infinite animation sample">Collecting latest sign-offs</string>
+  <string name="litho_sample_infinite_showcase_forecast_label" description="Panel label for rollout forecast in the product-style Litho infinite animation sample">Rollout forecast</string>
+  <string name="litho_sample_infinite_showcase_forecast_status" description="Status text for a loading forecast in the product-style Litho infinite animation sample">Refreshing model</string>
+  <string name="litho_sample_expandable_title" description="Page title for the expandable trip card sample">Weekend escapes</string>
+  <string name="litho_sample_expandable_subtitle" description="Page subtitle for the expandable trip card sample">A little less planning. A little more possibility.</string>
+  <string name="litho_sample_expandable_hint" description="Interaction hint below the expandable trip card">Tap to explore the details. Tap again to tuck them away.</string>
+  <string name="litho_sample_expandable_collection" description="Collection label on the expandable trip card">THE COASTAL COLLECTION</string>
+  <string name="litho_sample_expandable_destination" description="Destination title on the expandable trip card">Big Sur weekend</string>
+  <string name="litho_sample_expandable_location" description="Location on the expandable trip card">California · Pacific Coast Highway</string>
+  <string name="litho_sample_expandable_show" description="Prompt to expand the trip card">Explore the itinerary</string>
+  <string name="litho_sample_expandable_hide" description="Prompt to collapse the trip card">Close the itinerary</string>
+  <string name="litho_sample_expandable_duration_value" description="Duration value in the trip summary">2 days</string>
+  <string name="litho_sample_expandable_duration" description="Label for trip duration">duration</string>
+  <string name="litho_sample_expandable_stops_value" description="Stop count in the trip summary">3 stops</string>
+  <string name="litho_sample_expandable_stops" description="Label for scenic stops">scenic route</string>
+  <string name="litho_sample_expandable_pace_value" description="Pace value in the trip summary">Slow</string>
+  <string name="litho_sample_expandable_pace" description="Label for trip pace">pace</string>
+  <string name="litho_sample_expandable_details_title" description="Heading above the expanded trip itinerary">Take the scenic route.</string>
+  <string name="litho_sample_expandable_summary" description="Summary of the expanded trip itinerary">Ocean air, quiet trails, and nowhere to rush. Your weekend, at a glance.</string>
+  <string name="litho_sample_expandable_day_one_title" description="Title of the first itinerary day">Saturday · Along the coast</string>
+  <string name="litho_sample_expandable_day_one_summary" description="Summary of the first itinerary day">Bixby Bridge &amp; a sunset at Pfeiffer Beach</string>
+  <string name="litho_sample_expandable_day_two_title" description="Title of the second itinerary day">Sunday · Into the redwoods</string>
+  <string name="litho_sample_expandable_day_two_summary" description="Summary of the second itinerary day">A slow morning in the forest at Big Sur</string>
+  <string name="litho_sample_like_burst_title" description="Title of the post with a like button in the Litho like burst animation sample">Golden hour at Pfeiffer Beach</string>
+  <string name="litho_sample_like_burst_like" description="Label next to the like button before the post is liked in the Litho like burst animation sample">Like</string>
+  <string name="litho_sample_like_burst_liked" description="Label next to the like button after the post is liked in the Litho like burst animation sample">Liked</string>
+  <string name="litho_sample_like_burst_hint" description="Hint below the photo post explaining where to tap and how rapid taps behave in the Litho like burst animation sample">Tap anywhere on the photo, or the heart. Tapping mid-burst cancels the running sequence and starts the next one.</string>
+  <string name="litho_sample_prism_eyebrow" description="Small introductory label for the Prism animation scope showcase">INTERACTIVE LIGHT STUDY</string>
+  <string name="litho_sample_prism_title" description="Title of the Prism light sculpture animation showcase">PRISM</string>
+  <string name="litho_sample_prism_subtitle" description="Subtitle of the Prism light sculpture animation showcase">Make the invisible move.</string>
+  <string name="litho_sample_prism_halo" description="Button selecting the orbital halo light sculpture">Halo</string>
+  <string name="litho_sample_prism_bloom" description="Button selecting the flower shaped light sculpture">Bloom</string>
+  <string name="litho_sample_prism_galaxy" description="Button selecting the spiral galaxy light sculpture">Galaxy</string>
+  <string name="litho_sample_prism_halo_title" description="Title below the orbital halo light sculpture">Orbital halo</string>
+  <string name="litho_sample_prism_halo_description" description="Description below the orbital halo light sculpture">Six ribbons. One gravitational dance.</string>
+  <string name="litho_sample_prism_bloom_title" description="Title below the flower shaped light sculpture">Electric bloom</string>
+  <string name="litho_sample_prism_bloom_description" description="Description below the flower shaped light sculpture">Light unfolds, petal by petal.</string>
+  <string name="litho_sample_prism_galaxy_title" description="Title below the spiral galaxy light sculpture">Spiral galaxy</string>
+  <string name="litho_sample_prism_galaxy_description" description="Description below the spiral galaxy light sculpture">A small universe, endlessly turning.</string>
+  <string name="litho_sample_prism_pause" description="Button freezing the Prism sculpture and its animation sequence">Freeze time</string>
+  <string name="litho_sample_prism_resume" description="Button resuming the frozen Prism animation sequence">Let it flow</string>
+  <string name="litho_sample_prism_replay" description="Button replaying the entrance choreography for the selected Prism sculpture">Replay entrance</string>
+  <string name="litho_sample_prism_replay_description" description="Accessible name of the interactive sculpture, which replays its entrance when activated">Light sculpture. Replay entrance.</string>
+  <string name="litho_sample_prism_hint" description="Hint encouraging interruption of the Prism animation by selecting another scene">Change scenes mid-flight. The light follows you.</string>
 </resources>

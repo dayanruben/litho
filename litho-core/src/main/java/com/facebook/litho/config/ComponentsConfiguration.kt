@@ -161,6 +161,19 @@ internal constructor(
      * this creates a bug in a specific scenario where double measure happens.
      */
     @JvmField val performExactSameSpecsCheck: Boolean = true,
+    /**
+     * Lets [performExactSameSpecsCheck] treat two `UNSPECIFIED` specs as the same whatever sizes
+     * they carry. The committed spec is read back from its `SizeConstraints`, which keep no size
+     * for `UNSPECIFIED`, so without this a tree measured `UNSPECIFIED` with any size above 0 never
+     * matches, and lays out again on the main thread, or waits for a background layout, whenever
+     * its root changed.
+     *
+     * With this on, a measure while a newer root is laid out in the background returns the
+     * committed layout's size. A parent that then measures again with that size as its bound
+     * (`AT_MOST` or `EXACTLY`) gets the newer root laid out within it, and nothing measures it
+     * again. Only enable it where no parent re-measures at the size it was first given.
+     */
+    @JvmField val exactSameSpecsCheckIgnoresUnspecifiedSize: Boolean = false,
     @JvmField val componentEqualityMode: ComponentEqualityMode = ComponentEqualityMode.DEFAULT,
 
     /**
@@ -222,11 +235,6 @@ internal constructor(
     @JvmField
     var customLayoutHandlerProvider: RunnableHandlerProvider =
         ComponentTree.DefaultLayoutHandlerProvider(),
-    /**
-     * When true, view style properties use onBindViewWithDescription binders instead of
-     * ViewAttributes.
-     */
-    @JvmField val useViewStyleBinders: Boolean = false,
     /** Use postAtFront for layout promotion to prioritize background layout results */
     @property:ExperimentalLithoApi @JvmField val usePostAtFrontForLayoutPromotion: Boolean = false,
     /**
@@ -282,6 +290,12 @@ internal constructor(
      * Mounted content is kept, and passes that can only unmount still run.
      */
     @JvmField val pauseMountingWhileHidden: Boolean = false,
+    /**
+     * Whether a [com.facebook.litho.widget.RecyclerBinder] whose
+     * [com.facebook.litho.widget.RecyclerBinderConfig.layoutItemsOutsideMeasureLock] is not set
+     * lays its items out outside the binder lock.
+     */
+    @JvmField val layoutItemsOutsideMeasureLock: Boolean = false,
 ) {
 
   companion object {
@@ -445,6 +459,15 @@ internal constructor(
     @JvmField var usePrimitiveTextInput: Boolean = false
 
     /**
+     * When true, a legacy `TextInput` or `MaterialTextInput` measured on the main thread takes its
+     * measurement `EditText` from the `MountContentPools` pool of
+     * `TextInputMeasureEditTextAllocator` for its context, where
+     * `TextInputMeasureEditTextAllocator.prefill` builds one on the background layout thread, and
+     * the pool is refilled after each take.
+     */
+    @JvmField var prefetchTextInputMeasureEditText: Boolean = false
+
+    /**
      * Gives every mounted TextInput MATCH_PARENT layout params, as its
      * `shouldUseMatchParentLayoutParams` prop does for one input. Litho sizes the EditText itself,
      * so the default WRAP_CONTENT params only make every edit request a layout up to the window
@@ -467,6 +490,12 @@ internal constructor(
      * when customEllipsisText is set.
      */
     @JvmField var enableFixForTextEllipsisOffset: Boolean = true
+
+    /**
+     * Primitive Text finds where to cut for a custom ellipsis with `Paint.getOffsetForAdvance`,
+     * like legacy Text, instead of the much slower `Layout.getOffsetForHorizontal`.
+     */
+    @JvmField var primitiveTextPerformantTruncation: Boolean = false
 
     /**
      * Fixes RTL custom ellipsis truncation by converting ellipsisTarget to a run-relative advance
@@ -608,6 +637,8 @@ internal constructor(
     /** The minimum touch-target size, in dp, used by [useAutoTouchExpansion]. Defaults to 48dp. */
     @JvmField var minTouchTargetSizeDp: Int = 48
 
+    @JvmField var enableTouchDelegateInfoForAccessibility: Boolean = true
+
     /**
      * Policy for interactive components smaller than [minTouchTargetSizeDp].
      * [LogicViolationPolicy.LOG] reports each one via [com.facebook.litho.debug.DebugInfoReporter]
@@ -747,6 +778,10 @@ internal constructor(
 
     fun useStableIdsInRecyclerBinder(enabled: Boolean): Builder = apply {
       config = config.copy(useStableIdsInRecyclerBinder = enabled)
+    }
+
+    fun layoutItemsOutsideMeasureLock(enabled: Boolean): Builder = apply {
+      config = config.copy(layoutItemsOutsideMeasureLock = enabled)
     }
 
     @JvmOverloads

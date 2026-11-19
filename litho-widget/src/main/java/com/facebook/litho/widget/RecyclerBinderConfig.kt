@@ -157,6 +157,20 @@ data class RecyclerBinderConfig(
      * batches after a promoted layout that does not dirty mount state.
      */
     @JvmField val enableAsyncInsertLivenessFix: Boolean = false,
+    /**
+     * Temporary rollout flag. When true, [RecyclerBinder.measure] and [RecyclerBinder.setSize] do
+     * not lay items out while they hold the binder lock. Under the lock, a measure finds the next
+     * item size its result needs at the current specs; it lays that item out without the lock, and
+     * repeats until it has every size it needs. It then runs the usual measure logic under the lock
+     * with those sizes, so it returns what the locked measure would. A background measure that
+     * makes no progress for a few rounds falls back to the locked measure. Range layouts are
+     * requested under the lock that read their specs, and each item's tree ignores a root request
+     * that is older than one it has already seen. If not set, the binder follows
+     * [ComponentsConfiguration.layoutItemsOutsideMeasureLock] of its configuration.
+     */
+    @JvmField val layoutItemsOutsideMeasureLock: Boolean? = null,
+    /** Rebind component rows when their effective child size specs change on update. */
+    @JvmField val enableSizeSpecRebind: Boolean = false,
 ) {
 
   init {
@@ -209,6 +223,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var itemViewCacheSize = configuration.itemViewCacheSize
   private var componentsConfiguration = configuration.componentsConfiguration
   private var enableAsyncInsertLivenessFix = configuration.enableAsyncInsertLivenessFix
+  private var enableSizeSpecRebind = configuration.enableSizeSpecRebind
   private var rangeRatio = configuration.rangeRatio
   private var layoutHandlerFactory = configuration.layoutHandlerFactory
   private var enableStableIds = configuration.enableStableIds
@@ -217,6 +232,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
   private var paginationStrategy = configuration.paginationStrategy
   private var recyclingStrategy = configuration.recyclingStrategy
   private var resolvePaginationTargetOnCommit = configuration.resolvePaginationTargetOnCommit
+  private var layoutItemsOutsideMeasureLock = configuration.layoutItemsOutsideMeasureLock
 
   fun isCircular(isCircular: Boolean): RecyclerBinderConfigBuilder = also {
     this.isCircular = isCircular
@@ -262,6 +278,10 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     enableAsyncInsertLivenessFix = enabled
   }
 
+  fun enableSizeSpecRebind(enabled: Boolean): RecyclerBinderConfigBuilder = also {
+    enableSizeSpecRebind = enabled
+  }
+
   fun rangeRatio(rangeRatio: Float): RecyclerBinderConfigBuilder = also {
     this.rangeRatio = rangeRatio
   }
@@ -290,10 +310,15 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
     this.resolvePaginationTargetOnCommit = enabled
   }
 
+  fun layoutItemsOutsideMeasureLock(enabled: Boolean): RecyclerBinderConfigBuilder = also {
+    this.layoutItemsOutsideMeasureLock = enabled
+  }
+
   fun build(): RecyclerBinderConfig {
     return RecyclerBinderConfig(
         componentsConfiguration = componentsConfiguration,
         enableAsyncInsertLivenessFix = enableAsyncInsertLivenessFix,
+        enableSizeSpecRebind = enableSizeSpecRebind,
         isCircular = isCircular,
         lithoViewFactory = lithoViewFactory,
         hScrollAsyncMode = hScrollAsyncMode,
@@ -310,6 +335,7 @@ class RecyclerBinderConfigBuilder internal constructor(configuration: RecyclerBi
         paginationStrategy = paginationStrategy,
         recyclingStrategy = recyclingStrategy,
         resolvePaginationTargetOnCommit = resolvePaginationTargetOnCommit,
+        layoutItemsOutsideMeasureLock = layoutItemsOutsideMeasureLock,
     )
   }
 }

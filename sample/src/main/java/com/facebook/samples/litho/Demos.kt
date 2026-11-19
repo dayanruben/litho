@@ -91,6 +91,8 @@ import com.facebook.samples.litho.kotlin.animations.diffbased.PageIndicatorsComp
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.AllCommonDynamicPropsKComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.AnimateDynamicPropsKComponent
 import com.facebook.samples.litho.kotlin.animations.dynamicprops.CustomDynamicPropsKComponent
+import com.facebook.samples.litho.kotlin.animations.expandablecard.DiffBasedExpandableCardComponent
+import com.facebook.samples.litho.kotlin.animations.expandablecard.StateBasedExpandableCardComponent
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementRootKotlinKComponent
 import com.facebook.samples.litho.kotlin.animations.messages.Message
 import com.facebook.samples.litho.kotlin.animations.statebased.AnimatedContentCounterComponent
@@ -99,10 +101,12 @@ import com.facebook.samples.litho.kotlin.animations.statebased.AnimatedCounterCo
 import com.facebook.samples.litho.kotlin.animations.statebased.AnimatedPropertiesComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.AnimatedVisibilityDemoComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.AnimationCallbackComponent
+import com.facebook.samples.litho.kotlin.animations.statebased.AnimationScopeShowcaseComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.ColorAnimationComponent
-import com.facebook.samples.litho.kotlin.animations.statebased.ExpandableCardComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.FadeToggleComponent
+import com.facebook.samples.litho.kotlin.animations.statebased.FeedPhotoComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.InfiniteAnimationDemosComponent
+import com.facebook.samples.litho.kotlin.animations.statebased.LikeBurstComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.PathMotionComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.SpecComparisonComponent
 import com.facebook.samples.litho.kotlin.animations.statebased.SpringComparisonComponent
@@ -312,6 +316,10 @@ class Demos {
                             component = FadeToggleComponent(),
                         ),
                         SingleDemo(
+                            name = "Feed Photo Strip",
+                            component = FeedPhotoComponent(),
+                        ),
+                        SingleDemo(
                             name = "Animated Counter",
                             component = AnimatedCounterComponent(),
                         ),
@@ -325,7 +333,7 @@ class Demos {
                         ),
                         SingleDemo(
                             name = "Expandable Card",
-                            component = ExpandableCardComponent(),
+                            component = StateBasedExpandableCardComponent(),
                         ),
                         SingleDemo(
                             name = "Staggered Entrance",
@@ -351,6 +359,14 @@ class Demos {
                             name = "Animation Callback",
                             component = AnimationCallbackComponent(),
                         ),
+                        SingleDemo(
+                            name = "Like Burst",
+                            component = LikeBurstComponent(),
+                        ),
+                        SingleDemo(
+                            name = "Prism Studio · Choreography",
+                            component = AnimationScopeShowcaseComponent(),
+                        ),
                     ),
                 ),
                 DemoGrouping(
@@ -375,6 +391,10 @@ class Demos {
                         SingleDemo(
                             name = "Reflow",
                             component = DiffReflowToggleComponent(),
+                        ),
+                        SingleDemo(
+                            name = "Expandable Card",
+                            component = DiffBasedExpandableCardComponent(),
                         ),
                         SingleDemo(
                             name = "Choreography",

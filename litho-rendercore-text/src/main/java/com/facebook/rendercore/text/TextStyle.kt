@@ -110,6 +110,20 @@ class TextStyle : Cloneable {
   @JvmField var truncationStyle: TruncationStyle = TruncationStyle.USE_MAX_LINES
 
   /**
+   * Cut text for [customEllipsisText] the way legacy Litho Text does with the fast lookup: aim
+   * right-to-left lines at the width left for text, and step back by grapheme while Android still
+   * ellipsizes the result, so the custom ellipsis is shown whole.
+   */
+  @JvmField var useLegacyTextCustomEllipsisCut: Boolean = false
+
+  /**
+   * Check whether a press moved off a long-clickable span in the text view's own coordinates. Off
+   * compares the view's bounds in its parent with the touch, which cancels a press that hasn't
+   * moved when the view is offset in its parent.
+   */
+  @JvmField var trackLongClickInLocalCoordinates: Boolean = false
+
+  /**
    * The layout direction the host resolved for this text (e.g. Litho's Yoga direction), or `null`
    * to use the locale's. When set, it replaces the locale for the default FIRSTSTRONG text
    * direction and for [TextAlignment.LAYOUT_START]/[TextAlignment.LAYOUT_END], and
@@ -204,6 +218,8 @@ class TextStyle : Cloneable {
               isTextSelectable == other.isTextSelectable &&
               selectionHandleColor == other.selectionHandleColor &&
               truncationStyle == other.truncationStyle &&
+              useLegacyTextCustomEllipsisCut == other.useLegacyTextCustomEllipsisCut &&
+              trackLongClickInLocalCoordinates == other.trackLongClickInLocalCoordinates &&
               resolvedLayoutDirectionRtl == other.resolvedLayoutDirectionRtl &&
               _textColor == other._textColor)
 
@@ -361,6 +377,10 @@ class TextStyle : Cloneable {
     append("isTextSelectable=").append(isTextSelectable).append(", ")
     append("selectionHandleColor=").append(selectionHandleColor).append(", ")
     append("truncationStyle=").append(truncationStyle).append(", ")
+    append("useLegacyTextCustomEllipsisCut=").append(useLegacyTextCustomEllipsisCut).append(", ")
+    append("trackLongClickInLocalCoordinates=")
+        .append(trackLongClickInLocalCoordinates)
+        .append(", ")
     append("resolvedLayoutDirectionRtl=").append(resolvedLayoutDirectionRtl).append(", ")
     append("textColor=").append(textColor).append(", ")
     append("textColorStateList=").append(textColorStateList)

@@ -248,6 +248,9 @@ object TextSpec {
       if (lineHeight != Float.MAX_VALUE) {
         richTextStyle.lineHeight = lineHeight
       }
+      richTextStyle.useLegacyTextCustomEllipsisCut =
+          ComponentsConfiguration.primitiveTextPerformantTruncation
+      richTextStyle.trackLongClickInLocalCoordinates = true
       return RichText(
           // Null text still mounts an empty text view, like legacy: the caller's style, size
           // rounding and content binders then behave the same as for any other Text.
@@ -259,9 +262,11 @@ object TextSpec {
           dynamicTextColor = dynamicTextColor,
           // With its custom-ellipsis offset fix, legacy Text cuts at Paint.getOffsetForAdvance's
           // offset. Without it, keep RichText's default truncation, so turning the fix off is a
-          // full rollback.
+          // full rollback. primitiveTextPerformantTruncation alone uses legacy's fast cut, without
+          // the offset fix.
           usePerformantTruncation =
-              ComponentsConfiguration.enableFixForTextEllipsisOffset ||
+              ComponentsConfiguration.primitiveTextPerformantTruncation ||
+                  ComponentsConfiguration.enableFixForTextEllipsisOffset ||
                   RenderCoreConfig.usePerformantTruncation,
           useLegacyTextCustomEllipsisOffsetFix =
               ComponentsConfiguration.enableFixForTextEllipsisOffset,
