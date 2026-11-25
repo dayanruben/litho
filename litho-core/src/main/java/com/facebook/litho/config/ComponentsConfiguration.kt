@@ -393,6 +393,13 @@ internal constructor(
     @JvmField var cacheSolidColorDrawable: Boolean = false
 
     /**
+     * Backs each [com.facebook.litho.TreePropContainer] created while this is true with an
+     * [androidx.collection.MutableScatterMap] instead of a synchronized `HashMap`. Both arms hold
+     * the same tree props; this exists to measure the memory difference.
+     */
+    @JvmField var useScatterMapInTreePropContainer: Boolean = false
+
+    /**
      * When true, mount skips a MountSpec update only when the next render unit's content version
      * equals the mounted unit's. When false, mount trusts `STATE_UPDATED`, which compares with the
      * last committed layout and goes stale when that layout never mounted.
@@ -448,6 +455,13 @@ internal constructor(
 
     /** This flag is to enable usage of Primitive Text */
     @JvmField var usePrimitiveText: Boolean = false
+
+    /**
+     * When `true`, apps that A/B pinch to zoom use `Zoomable`, which draws a scaled copy of the
+     * content in the window's overlay, instead of `ZoomableComponent`. Litho doesn't read it: the
+     * callers choose the component with it.
+     */
+    @JvmField var useOverlayZoom: Boolean = false
 
     /** This flag is to enable usage of text with spans when measuring Primitive TextInput */
     @JvmField var useTextWithSpansForMeasure: Boolean = false
@@ -644,7 +658,13 @@ internal constructor(
     /** The minimum touch-target size, in dp, used by [useAutoTouchExpansion]. Defaults to 48dp. */
     @JvmField var minTouchTargetSizeDp: Int = 48
 
-    @JvmField var enableTouchDelegateInfoForAccessibility: Boolean = true
+    /**
+     * Whether a host's touch delegate reports its expanded touch areas to accessibility services.
+     * Called from `getTouchDelegateInfo()`, not read when Litho is configured, so an app can back
+     * it with a config that is not ready at startup. It is called on every touch exploration hover
+     * event, so it should return a cached value.
+     */
+    @JvmField var touchDelegateInfoForAccessibilityEnabled: () -> Boolean = { true }
 
     /**
      * Policy for interactive components smaller than [minTouchTargetSizeDp].
