@@ -30,6 +30,10 @@ class LazyCollectionChildren {
   internal val effectiveIndexToId: MutableMap<Int, MutableSet<Any>> by lazy { mutableMapOf() }
   internal val idToChild: MutableMap<Any, CollectionChild> by lazy { mutableMapOf() }
 
+  /** The child groups declared here, in order. Null until the first one. */
+  internal var childGroups: MutableList<ChildGroup>? = null
+    private set
+
   private val collectionChildrenBuilder = mutableListOf<CollectionChild>()
   /**
    * Whether any added child relies on a generated id. Generated ids are positional, so item
@@ -130,6 +134,38 @@ class LazyCollectionChildren {
         null,
         onNearViewport,
     )
+    collectionChildrenBuilder.add(child)
+    maybeRegisterForOnEnterOrNearCallbacks(child)
+  }
+
+  /** Where the groups that declare events sit in this flattened list. Null until the first one. */
+  internal var childGroupRanges: MutableList<ChildGroupRange>? = null
+    private set
+
+  internal val size: Int
+    get() = collectionChildrenBuilder.size
+
+  internal val childGroupRangeCount: Int
+    get() = childGroupRanges?.size ?: 0
+
+  internal fun addChildGroupRange(index: Int, range: ChildGroupRange) {
+    (childGroupRanges ?: ArrayList<ChildGroupRange>().also { childGroupRanges = it }).add(
+        index,
+        range,
+    )
+  }
+
+  internal fun addChildGroup(id: Any, content: LazyListChildGroupScope.() -> Unit) {
+    val groups = childGroups ?: ArrayList<ChildGroup>().also { childGroups = it }
+    groups.add(ChildGroup(id, content, position = collectionChildrenBuilder.size))
+  }
+
+  internal fun inheritGeneratedIds(children: LazyCollectionChildren) {
+    hasGeneratedIds = hasGeneratedIds || children.hasGeneratedIds
+  }
+
+  /** Adds [child], whose id is already final. */
+  internal fun addResolved(child: CollectionChild) {
     collectionChildrenBuilder.add(child)
     maybeRegisterForOnEnterOrNearCallbacks(child)
   }

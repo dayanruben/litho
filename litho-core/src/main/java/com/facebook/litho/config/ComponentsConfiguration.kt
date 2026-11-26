@@ -221,6 +221,12 @@ internal constructor(
     @JvmField val enableNewCollection: Boolean = false,
 
     /**
+     * Enables the framework changes behind LazyList child groups that also affect lists and
+     * components that do not declare a child group. Child groups are unsupported while it is off.
+     */
+    @JvmField val enableLazyListChildGroups: Boolean = false,
+
+    /**
      * When true, animated values produced during the `AnimationController` frame callback are
      * published through a same-frame invalidation path (`StateUpdater.applyAnimationFrameUpdates`)
      * instead of the frame-deferred `updateHookStateSync`. When false, animation frames fall back
@@ -264,6 +270,16 @@ internal constructor(
      * never mounted otherwise grows without bound.
      */
     @JvmField val boundDataRenderedCallbacksBeforeMount: Boolean = false,
+    // TODO: When this becomes the default, update the rendered contract in OnDataRendered and
+    // ChangeSetCompleteCallback.
+    /**
+     * When true, a [com.facebook.litho.widget.RecyclerBinder] mounted on a view that only reports
+     * its own draws (see [com.facebook.litho.widget.HasPostDispatchDrawListener]) also checks its
+     * pending `@OnDataRendered` callbacks on the window's next pre-draw, as it does for other
+     * views. Without it, a change set that only touches off-screen items is laid out without
+     * redrawing the view, and its callbacks wait until something else redraws it.
+     */
+    @JvmField val dispatchDataRenderedAfterLayout: Boolean = false,
     /**
      * When true, a render reads the root and tree props when its resolve starts, and the size when
      * its layout starts, not when it was requested. A resolve the layout thread runs late then
@@ -415,6 +431,12 @@ internal constructor(
      */
     @JvmField var useOwnJobInComponentCoroutineScope: Boolean = false
 
+    /** Apps install [com.facebook.litho.ActivityScopedTreeReleaser] only when this is set. */
+    @JvmField var releaseActivityTreesOnDestroy: Boolean = false
+
+    /** Section handles held by product code hold their SectionTree weakly. */
+    @JvmField var weakSectionTreeHandles: Boolean = false
+
     @JvmField var shouldOverrideHasTransientState: Boolean = false
     @JvmField var reduceMemorySpikeUserSession: Boolean = false
     @JvmField var reduceMemorySpikeDataDiffSection: Boolean = false
@@ -431,6 +453,8 @@ internal constructor(
     @JvmField var enablePopulateAccessibilityNodeOnAllHosts: Boolean = false
 
     @JvmField var enableComponentHostViewMoveInvalidation: Boolean = false
+
+    @JvmField var enableStyleTransitionRootSizeHold: Boolean = true
 
     /**
      * When true, IMOs are created with hostOutput=null during reduce (skipping per-child
@@ -831,6 +855,10 @@ internal constructor(
       config = config.copy(enableNewCollection = enabled)
     }
 
+    fun enableLazyListChildGroups(enabled: Boolean): Builder = apply {
+      config = config.copy(enableLazyListChildGroups = enabled)
+    }
+
     fun customLayoutHandlerProvider(provider: RunnableHandlerProvider): Builder = apply {
       config = config.copy(customLayoutHandlerProvider = provider)
     }
@@ -856,6 +884,10 @@ internal constructor(
 
     fun boundDataRenderedCallbacksBeforeMount(enabled: Boolean): Builder = apply {
       config = config.copy(boundDataRenderedCallbacksBeforeMount = enabled)
+    }
+
+    fun dispatchDataRenderedAfterLayout(enabled: Boolean): Builder = apply {
+      config = config.copy(dispatchDataRenderedAfterLayout = enabled)
     }
 
     fun renderWithCurrentInputs(enabled: Boolean): Builder = apply {

@@ -28,6 +28,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewParent
+import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.OnPreDrawListener
 import androidx.annotation.AnyThread
 import androidx.annotation.IntDef
@@ -144,6 +145,15 @@ class RecyclerBinder private constructor(builder: Builder) :
    * [ComponentsConfiguration.layoutItemsOutsideMeasureLock] if the config leaves it unset.
    */
   private val layoutItemsOutsideMeasureLock: Boolean
+  /**
+   * The resolved [RecyclerBinderConfig.dispatchDataRenderedAfterLayout], or
+   * [ComponentsConfiguration.dispatchDataRenderedAfterLayout] if the config leaves it unset.
+   */
+  private val dispatchDataRenderedAfterLayout: Boolean
+
+  /** Where [onDataRenderedPreDrawListener] was added, so it is removed from that observer. */
+  private var onDataRenderedPreDrawView: RecyclerView? = null
+  private var onDataRenderedPreDrawObserver: ViewTreeObserver? = null
   private val asyncInsertHandler: RunnableHandler?
   private val lithoVisibilityEventsController: LithoVisibilityEventsController?
 
@@ -284,6 +294,21 @@ class RecyclerBinder private constructor(builder: Builder) :
     true
   }
 
+  // Separate from onPreDrawListener, so the plain-RecyclerView path never adds or removes it.
+  private val onDataRenderedPreDrawListener: OnPreDrawListener = OnPreDrawListener {
+    maybeDispatchDataRendered()
+    true
+  }
+
+  private val onDataRenderedPreDrawDetachListener: OnAttachStateChangeListener =
+      object : OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View) = Unit
+
+        override fun onViewDetachedFromWindow(v: View) {
+          unregisterOnDataRenderedPreDrawListener()
+        }
+      }
+
   private val onAttachStateChangeListener: OnAttachStateChangeListener =
       object : OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) = Unit
@@ -315,6 +340,21 @@ class RecyclerBinder private constructor(builder: Builder) :
       synchronized(this@RecyclerBinder) {
         resetMeasuredSize(width)
         requestRemeasure()
+      }
+    }
+  }
+
+  /**
+   * Every committed layout refreshes the item's height, so a later state update is compared with
+   * the height the list last saw. Only state updates request a remeasure: layouts the binder
+   * computes itself are already accounted for by the measure or change set that asked for them.
+   */
+  private fun getItemHeightChangeListener(holder: ComponentTreeHolder): MeasureListener {
+    return MeasureListener { _, _, height, stateUpdate ->
+      val previousHeight = holder.measuredHeight
+      holder.measuredHeight = height
+      if (stateUpdate && previousHeight != height) {
+        synchronized(this@RecyclerBinder) { requestRemeasure() }
       }
     }
   }
@@ -882,7 +922,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     }
 
     unregisterDrawListener(recyclerView)
-    maybeDispatchDataRendered()
+    maybeDispatchDataRendered(allowOnDataRenderedPreDrawListener = false)
     subAdapterRecyclerView = null
   }
 
@@ -1941,10 +1981,16 @@ class RecyclerBinder private constructor(builder: Builder) :
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  private fun maybeDispatchDataRendered() {
+  /**
+   * @param allowOnDataRenderedPreDrawListener whether deferred callbacks may register
+   *   [onDataRenderedPreDrawListener]. False when the view's draw listeners were just unregistered
+   *   (unmount, sub-adapter removal).
+   */
+  private fun maybeDispatchDataRendered(allowOnDataRenderedPreDrawListener: Boolean = true) {
     ThreadUtils.assertMainThread()
     if (pendingDataRendered.isEmpty()) {
       // early return if no pending dataRendered callbacks.
+      unregisterOnDataRenderedPreDrawListener()
       return
     }
 
@@ -1986,6 +2032,7 @@ class RecyclerBinder private constructor(builder: Builder) :
       val isMounted = recyclerView != null
       val snapshotCallbacks: Deque<PendingDataRendered> = ArrayDeque(pendingDataRendered)
       pendingDataRendered.clear()
+      unregisterOnDataRenderedPreDrawListener()
       mainThreadHandler.postAtFrontOfQueue {
         val uptimeMillis = SystemClock.uptimeMillis()
         while (!snapshotCallbacks.isEmpty()) {
@@ -1995,6 +2042,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     } else {
       if (pendingDataRendered.size > DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE) {
         pendingDataRendered.clear()
+        unregisterOnDataRenderedPreDrawListener()
         val messageBuilder = buildString {
           append("recyclerView: ")
           append(recyclerView)
@@ -2028,6 +2076,43 @@ class RecyclerBinder private constructor(builder: Builder) :
 
     // Otherwise we'll wait for ViewGroup#dispatchDraw(Canvas), which would call this method again
     // to execute onDataRendered callbacks.
+    // Off-screen-only change sets don't redraw the view, so also check on the next pre-draw.
+    if (
+        allowOnDataRenderedPreDrawListener &&
+            dispatchDataRenderedAfterLayout &&
+            recyclerView is HasPostDispatchDrawListener &&
+            pendingDataRendered.isNotEmpty()
+    ) {
+      registerOnDataRenderedPreDrawListener(recyclerView)
+    }
+  }
+
+  @ThreadConfined(ThreadConfined.UI)
+  private fun registerOnDataRenderedPreDrawListener(view: RecyclerView) {
+    if (onDataRenderedPreDrawView === view) {
+      return
+    }
+    unregisterOnDataRenderedPreDrawListener()
+    val observer = view.viewTreeObserver
+    if (!view.isAttachedToWindow || !observer.isAlive) {
+      return
+    }
+    observer.addOnPreDrawListener(onDataRenderedPreDrawListener)
+    view.addOnAttachStateChangeListener(onDataRenderedPreDrawDetachListener)
+    onDataRenderedPreDrawView = view
+    onDataRenderedPreDrawObserver = observer
+  }
+
+  @ThreadConfined(ThreadConfined.UI)
+  private fun unregisterOnDataRenderedPreDrawListener() {
+    val view = onDataRenderedPreDrawView ?: return
+    val observer = onDataRenderedPreDrawObserver
+    onDataRenderedPreDrawView = null
+    onDataRenderedPreDrawObserver = null
+    if (observer != null && observer.isAlive) {
+      observer.removeOnPreDrawListener(onDataRenderedPreDrawListener)
+    }
+    view.removeOnAttachStateChangeListener(onDataRenderedPreDrawDetachListener)
   }
 
   @Synchronized
@@ -3514,7 +3599,7 @@ class RecyclerBinder private constructor(builder: Builder) :
     view.removeCallbacks(updateViewportRunnable)
 
     unregisterDrawListener(view)
-    maybeDispatchDataRendered()
+    maybeDispatchDataRendered(allowOnDataRenderedPreDrawListener = false)
 
     view.adapter = null
     view.layoutManager = null
@@ -3553,6 +3638,9 @@ class RecyclerBinder private constructor(builder: Builder) :
 
       for (listener in additionalPostDispatchDrawListeners) {
         view.unregisterPostDispatchDrawListener(listener)
+      }
+      if (onDataRenderedPreDrawView === view) {
+        unregisterOnDataRenderedPreDrawListener()
       }
     } else view.viewTreeObserver?.removeOnPreDrawListener(onPreDrawListener)
   }
@@ -4932,6 +5020,9 @@ class RecyclerBinder private constructor(builder: Builder) :
     layoutItemsOutsideMeasureLock =
         recyclerBinderConfig.layoutItemsOutsideMeasureLock
             ?: componentsConfiguration.layoutItemsOutsideMeasureLock
+    dispatchDataRenderedAfterLayout =
+        recyclerBinderConfig.dispatchDataRenderedAfterLayout
+            ?: componentsConfiguration.dispatchDataRenderedAfterLayout
 
     /*
      This is a work-around to use the client explicit config, or if that hasn't happened to resort
@@ -4968,8 +5059,15 @@ class RecyclerBinder private constructor(builder: Builder) :
         layoutInfo.getScrollDirection() == HORIZONTAL &&
             (recyclerBinderConfig.crossAxisWrapMode == CrossAxisWrapMode.Dynamic)
     componentTreeMeasureListenerFactory =
-        if (!hasDynamicItemHeight) null
-        else ComponentTreeMeasureListenerFactory { holder -> getMeasureListener(holder) }
+        when {
+          hasDynamicItemHeight ->
+              ComponentTreeMeasureListenerFactory { holder -> getMeasureListener(holder) }
+          recyclerBinderConfig.wrapContent &&
+              recyclerBinderConfig.remeasureOnItemHeightChange &&
+              layoutInfo.getScrollDirection() == VERTICAL ->
+              ComponentTreeMeasureListenerFactory { holder -> getItemHeightChangeListener(holder) }
+          else -> null
+        }
 
     isMainAxisWrapContent = recyclerBinderConfig.wrapContent
     isCrossAxisWrapContent = recyclerBinderConfig.crossAxisWrapMode != CrossAxisWrapMode.NoWrap
